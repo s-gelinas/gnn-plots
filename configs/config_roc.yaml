@@ -1,4 +1,5 @@
-output_dir: output
+output_dir: /project/6050429/sgelinas/salt/gnn-plots/output
+output_dir: /project/6050429/sgelinas/salt/gnn-plots/output
 
 samples: &samples
   one:
@@ -37,9 +38,13 @@ plots:
   roc:
     class: plotter.plot_classes.roc_plot.RocPlotBase
     samples: *samples
-    file_name: roc.pdf
+    file_name: output/roc.png
+    file_name: output/roc.png
     target_label: isDisplaced
-    range: !!python/tuple [0.95, 1, 100]
+    tagger_output: GN2ej_pdispjet
+    range: !!python/tuple [0.84, 1, 100]
+    tagger_output: GN2ej_pdispjet
+    range: !!python/tuple [0.84, 1, 100]
     show_cuts: True  # choose whether to display your desired cuts
     leg_inside: True
     leg_fontsize: 12

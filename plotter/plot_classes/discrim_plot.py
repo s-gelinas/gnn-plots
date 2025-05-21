@@ -32,8 +32,11 @@ class DiscrimPlotBase(PlotBase):
 		    key: value for key, value in self.config.style.items() if key in required_params
 		}
 
+		# assume only one sample in the config file
+		sample_key = list(self.config.samples.keys())[0]
+
 		# extracting sample details and storing as a dictionary
-		sample = ConfigDict(self.config.samples)
+		sample = ConfigDict(self.config.samples[sample_key])
 
 		# extracting data and processing it
 		with h5py.File(sample.path, "r") as hdf_file:
@@ -58,6 +61,7 @@ class DiscrimPlotBase(PlotBase):
 				n_ratio_panels=0,
 				xlabel="GN3ej score",
 				ylabel="Normalized number of jets",
+				logy=True,
 				leg_ncol=1,
 				xmin=self.config.low,
 				xmax=self.config.high,
@@ -85,4 +89,4 @@ class DiscrimPlotBase(PlotBase):
 			)
 
 			plot_histo.draw()
-			plot_histo.savefig(self.config.file_name, tansparent=False)
+			plot_histo.savefig(self.config.file_name, transparent=False)

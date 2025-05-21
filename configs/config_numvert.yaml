@@ -54,7 +54,8 @@ plots:
   numvert_compare:
     class: plotter.plot_classes.num_vert_perf_plot.NumVertComparePlotBase
     samples:  # specify specific sample here
-      path: '/project/def-mdanning/rhall02/salt/salt/logs/mc23-fold0-gnn-count/GN3ej_20240613-T111915/ckpts/epoch=010-val_loss=0.02255__test_pp_output_val.h5'
+      path: '/project/6050429/sgelinas/salt/salt/logs/GN2ej_20250512-T145448/ckpts/epoch=001-val_loss=0.03020__test_pp_output_val.h5'
+      path: '/project/6050429/sgelinas/salt/salt/logs/GN2ej_20250512-T145448/ckpts/epoch=001-val_loss=0.03020__test_pp_output_val.h5'
       colour: mediumblue
       df_name: 'tracks'
     filename: NumVertCompare.pdf
