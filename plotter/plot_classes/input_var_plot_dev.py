@@ -1,19 +1,17 @@
-"""Produce histogram of each input variable for different jet types"""
-
 import numpy as np
 import pandas as pd
 import h5py
 
 from ftag import Flavours
 from puma import Histogram, HistogramPlot
-from puma.utils import get_dummy_2_taggers, get_good_linestyles
+from puma.utils import get_good_linestyles
 from plotter.config_dict import ConfigDict
 from plotter.plot_classes.plotbase import PlotBase
 
 class InputVarPlotBase(PlotBase):
 	"""
 	InputVarPlotBase is a subclass of PlotBase specializing in plotting histograms of input variables
-	over different jet types.
+	over different jet types. Can also plot over different track types for a specified jet type.
 	"""
 
 	def plot(self):
@@ -29,7 +27,7 @@ class InputVarPlotBase(PlotBase):
 
 		# filter only the necessary parameters from the config file
 		filtered_params = {
-		    key: value for key, value in self.config.style.items() if key in required_params
+			key: value for key, value in self.config.style.items() if key in required_params
 		}
 
 		# assume only one sample in the config file
@@ -43,63 +41,67 @@ class InputVarPlotBase(PlotBase):
 
 		# extracting data and processing it
 		with h5py.File(sample.path, "r") as hdf_file:
-			# load data sets
+			# load data sets using pandas
 			jets_ds = hdf_file["jets"]
 			tracks_ds = hdf_file["tracks"]
 
 			# load "isDisplaced" flag to classify jets
-			is_disp = jets_ds["isDisplaced"] == 1
-			is_prompt = jets_ds["isDisplaced"] == 0
-			
+			is_disp = jets_ds["isDisplaced"][:] == 1
+			is_disp_tracks = np.repeat(is_disp[:, np.newaxis], 200, axis=1)
+
+			# filter for selected jet type
+			if sample.jet_type == "displaced":
+				#jets_ds = jets_ds[is_disp]
+				tracks_ds = tracks_ds[is_disp_tracks]
+			elif sample.jet_type == "prompt":
+				#jets_ds = jets_ds[~is_disp]
+				tracks_ds = tracks_ds[~is_disp_tracks]
+
+			# extract track origin labels
+			valid = np.array(tracks_ds['valid'])
+			true_origin = np.array(tracks_ds["truthOriginLabel"])[valid]
+			is_pileup = true_origin==0
+			is_fake = true_origin==1
+			is_prompt = true_origin==2
+			is_displaced = true_origin==3
+
 			# load variables to plot
 			if "variables" not in self.config or not self.config.variables:
 				variables = {}
-				variables["jets"] = [
-        			{key: key} for key, dt in jets_ds.dtype.fields.items()
-        			if np.issubdtype(dt[0], np.floating) or np.issubdtype(dt[0], np.unsignedinteger)
-					]
 				variables["tracks"] = [
-        			{key: key} for key, dt in tracks_ds.dtype.fields.items()
-        			if np.issubdtype(dt[0], np.floating) or np.issubdtype(dt[0], np.unsignedinteger)
-					]
+					{key: key} for key, dt in tracks_ds.dtype.items()
+					if np.issubdtype(dt[0], np.floating) or np.issubdtype(dt[0], np.unsignedinteger)
+				]
 			else:
 				variables = self.config.variables
 
 			# loop through variables to plot
-			for ds_name, variables_list in variables.items(): #loop through "jets", "tracks"
-				for variable_dict in variables_list: #loop through variables to plot
-					for var, xlabel in variable_dict.items(): 
-						if ds_name == "jets":
-							ds = jets_ds
-							var_data = ds[var]
-							var_disp = var_data[is_disp]
-							var_prompt = var_data[is_prompt]
+			for ds_name, variables_list in variables.items():  # ds_name should only be tracks
+				for variable_dict in variables_list:  # loop through variables to plot
+					for var, xlabel in variable_dict.items(): 						
+						var_data = np.array(tracks_ds[var])[valid]
 						
-						elif ds_name == "tracks":
-							ds = tracks_ds
-							var_data = ds[var]
-							var_disp = var_data[is_disp]
-							var_prompt = var_data[is_prompt]
-						
-							# convert to 1d
-							var_disp = var_disp.ravel()
-							var_prompt = var_prompt.ravel()
-
-							# get rid of nan entries
-							var_disp = var_disp[~np.isnan(var_disp)]
-							var_prompt = var_prompt[~np.isnan(var_prompt)]
-
 						# convert pt to TeV
 						if var == "pt":
-							var_disp = var_disp / 1e6
-							var_prompt = var_prompt / 1e6
+							var_data = var_data / 1e6
+
+						var_pileup = var_data[is_pileup]
+						var_fake = var_data[is_fake]
+						var_prompt = var_data[is_prompt]
+						var_displaced = var_data[is_displaced]
+
+						# get rid of nan entries
+						var_pileup = var_pileup[~np.isnan(var_pileup)]
+						var_fake = var_fake[~np.isnan(var_fake)]
+						var_prompt = var_prompt[~np.isnan(var_prompt)]
+						var_displaced = var_displaced[~np.isnan(var_displaced)]
 
 						linestyles = get_good_linestyles()[:2]
 
-						use_logx = ds_name == "tracks" and var == "pt" # log x-axis for track pT
+						use_logx = ds_name == "tracks" and var == "pt"  # log x-axis for track pT
 
 						# set histogram bins
-						combined_data = np.concatenate([var_disp, var_prompt])
+						combined_data = var_data[~np.isnan(var_data)]
 						is_discrete = np.issubdtype(var_data.dtype, np.integer) or np.array_equal(combined_data, combined_data.astype(int))
 						if is_discrete:
 							min_val = int(np.nanmin(combined_data))
@@ -110,16 +112,16 @@ class InputVarPlotBase(PlotBase):
 						else:
 							try:
 								bins = np.histogram_bin_edges(combined_data, bins="auto")
-								if len(bins) > 100: #cap number of bins
+								if len(bins) > 100:  # cap number of bins
 									bins = np.linspace(combined_data.min(), combined_data.max(), 100)
-							except MemoryError: #occurs when too many bins generated by np.histogram_bin_edges
+							except MemoryError:  # occurs when too many bins generated by np.histogram_bin_edges
 								bins = np.linspace(combined_data.min(), combined_data.max(), 100)
 
 						# initialize histogram plot
 						plot_histo = HistogramPlot(
 							bins=bins,
 							n_ratio_panels=0,
-							xlabel = xlabel,
+							xlabel=xlabel,
 							ylabel="Normalized number of jets",
 							logy=True,
 							logx=use_logx,
@@ -130,22 +132,43 @@ class InputVarPlotBase(PlotBase):
 						# add the histograms
 						plot_histo.add(
 							Histogram(
-								var_disp,
-								label='Emerging jets',
+								var_pileup,
+								label='Pileup',
 								colour=Flavours["bjets"].colour,
 								linestyle=linestyles[0]
 							),
 							reference=False
 						)
+
+						plot_histo.add(
+							Histogram(
+								var_fake,
+								label="Fake",
+								colour=Flavours["cjets"].colour,
+								linestyle=linestyles[0],
+							),
+							reference=False
+						)
+
 						plot_histo.add(
 							Histogram(
 								var_prompt,
-								label="QCD jets",
-								colour=Flavours["cjets"].colour,
-								linestyle=linestyles[1],
+								label="Prompt",
+								colour=Flavours["ujets"].colour,
+								linestyle=linestyles[0],
+							),
+							reference=False
+						)
+
+						plot_histo.add(
+							Histogram(
+								var_displaced,
+								label="Displaced",
+								colour=Flavours["taujets"].colour,
+								linestyle=linestyles[0],
 							),
 							reference=False
 						)
 
 						plot_histo.draw()
-						plot_histo.savefig(f"{output_dir}/{ds_name}/{var}.png", transparent=False)
+						plot_histo.savefig(f"{output_dir}/{sample.jet_type}/{var}.png", transparent=False)

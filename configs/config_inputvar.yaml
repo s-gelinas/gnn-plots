@@ -2,10 +2,10 @@ output_dir: output
 
 samples: &samples #plotting code assumes only one sample
   GN2ej:
-    path: '/project/6050429/sgelinas/salt/salt/logs/GN2ej_20250512-T145448/ckpts/epoch=001-val_loss=0.03020__test_pp_output_val.h5'
-    label: 'GN2ej'
+    path: '/project/def-mdanning/sgelinas/salt/salt/logs/GN2ej_20250512-T145448/ckpts/epoch=001-val_loss=0.03020__test_pp_output_val.h5' #'/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-fold0_20250521-T174316/ckpts/epoch=009-val_loss=0.02690__test_pp_output_val.h5'
+    label: 'GN3ej'
     reference: True
-    df_name: jets
+    df_name: jets 
 
 style: &style
   ylabel: ""
@@ -22,35 +22,35 @@ plots:
   input_var_plot:
     class: plotter.plot_classes.input_var_plot.InputVarPlotBase
     samples: *samples
-    output_dir: output/input_var_plots 
+    output_dir: output/GN3ej-fold0/input_var_plots 
     variables:  # Remove to plot all variables. Format is {var}: {xlabel}.
-      #jets:
-      #  - pt: "$p_T$"
+      jets:
+        - pt: "$p_T$ [TeV]"
       tracks:
         - d0: "$d_0$"
-        - z0SinTheta: "$z_0 \\sin(\\theta)$"
-        - dphi: "$\\Delta \\phi$"
-        - deta: "$\\Delta \\eta$"
-        - qOverP: "$q/p$"
-        - chiSquared: "$\\chi^2$"
-        - radiusOfFirstHit: "Radius of first hit"
-        - theta: "$\\theta$"
-        - numberDoF: "Number of degrees of freedom"
-        - pt: "$p_T$ [TeV]"
-        - z0RelativeToBeamspot: "$z_0$ relative to beamspot"
-        - z0RelativeToBeamspotUncertainty: "Uncertainty in $z_0$ relative to beamspot"
-        - IP3D_signed_d0_significance: "$\\frac{d_0}{\\sigma(d_0)}$"
-        - IP3D_signed_z0_significance: "$\\frac{z_0}{\\sigma(z_0)}$"
-        - phiUncertainty: "$\\sigma(\\phi)$"
-        - thetaUncertainty: "$\\sigma(\\theta)$"
-        - qOverPUncertainty: "$\\sigma(q/p)$"
-        - z0SinThetaUncertainty: "$\\sigma(z_0 \\sin(\\theta))$"
+        #- z0SinTheta: "$z_0 \\sin(\\theta)$"
+        #- dphi: "$\\Delta \\phi$"
+        #- deta: "$\\Delta \\eta$"
+        #- qOverP: "$q/p$"
+        #- chiSquared: "$\\chi^2$"
+        #- radiusOfFirstHit: "Radius of first hit"
+        #- theta: "$\\theta$"
+        #- numberDoF: "Number of degrees of freedom"
+        #- pt: "$p_T$ [TeV]"
+        #- z0RelativeToBeamspot: "$z_0$ relative to beamspot"
+        #- z0RelativeToBeamspotUncertainty: "Uncertainty in $z_0$ relative to beamspot"
+        #- IP3D_signed_d0_significance: "$\\frac{d_0}{\\sigma(d_0)}$"
+        #- IP3D_signed_z0_significance: "$\\frac{z_0}{\\sigma(z_0)}$"
+        #- phiUncertainty: "$\\sigma(\\phi)$"
+        #- thetaUncertainty: "$\\sigma(\\theta)$"
+        #- qOverPUncertainty: "$\\sigma(q/p)$"
+        #- z0SinThetaUncertainty: "$\\sigma(z_0 \\sin(\\theta))$"
         - numberOfPixelHits: "Number of pixel hits"
-        - numberOfSCTHits: "Number of SCT hits"
-        - numberOfSCTHoles: "Number of SCT holes"
-        - numberOfInnermostPixelLayerHits: "Number of innermost pixel layer hits"
-        - numberOfPixelSharedHits: "Number of shared pixel hits"
-        - numberOfSCTSharedHits: "Number of shared SCT hits"
+        #- numberOfSCTHits: "Number of SCT hits"
+        #- numberOfSCTHoles: "Number of SCT holes"
+        #- numberOfInnermostPixelLayerHits: "Number of innermost pixel layer hits"
+        #- numberOfPixelSharedHits: "Number of shared pixel hits"
+        #- numberOfSCTSharedHits: "Number of shared SCT hits"
     style:
       <<: *style
       n_ratio_panels: 1

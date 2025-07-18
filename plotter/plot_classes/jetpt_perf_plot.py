@@ -58,16 +58,20 @@ class JetPtPerfPlotBase(PlotBase):
 				wp = self.config.working_point
 
 				# string names for probability of displaced and prompt
-				pDisp = keys_list[-2]
-				pPrompt = keys_list[-1]
+				## FIX THIS - really bad way to account for difference between CrossEntropyLoss and BCEWithLogitsLoss for jet classification
+				if len(keys_list) == 24:
+					pDisp = keys_list[-1]
+				elif len(keys_list) == 25:
+					pDisp = keys_list[-2]
+				#pPrompt = keys_list[-1]
 
 				# extract pDisp, pPrompt, and jet p_T, store in pandas dataframe
 				df = pd.DataFrame(
 					{
 						"pt": np.array(ds_jet["pt"])/1e6, # jet p_T in TeV
 						"isDisplaced": np.array(ds_jet["isDisplaced"]),
-						pDisp: np.array(ds_jet[pDisp]),
-						pPrompt: np.array(ds_jet[pPrompt])
+						pDisp: np.array(ds_jet[pDisp]) #,
+						#pPrompt: np.array(ds_jet[pPrompt])
 					}
 				)	
 

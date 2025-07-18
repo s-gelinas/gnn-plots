@@ -8,7 +8,8 @@ from plotter.plot_classes.plotbase import PlotBase
 
 class ConfMatPlotBase(PlotBase):
 	"""
-	Subclass of PlotBase to plot either jet classification or track origin confusion matrices.
+	Subclass of PlotBase to plot either jet classification or track origin confusion matrices with 
+	extended labelling scheme for track origin.
 	"""
 
 	def plot(self):
@@ -32,19 +33,41 @@ class ConfMatPlotBase(PlotBase):
 
 		# extracting sample details and storing as a dictionary
 		sample = ConfigDict(self.config.samples)
-		f_name = sample.f_name
 
 		# EXTRACTING THE DATA
 		# -------------------
 		with h5py.File(sample.path, "r") as hdf_file:
-			task_type = self.config.task_type
 
 			ds_tfj = hdf_file[sample.df_name]
 
-			if task_type == 'jet_classification':
+			# get attribute name for GNN ej score
+			keys_list = list(ds_tfj.dtype.fields.keys())
+
+            # search for which key contains the GNN signal discriminant
+			for i, key in enumerate(keys_list):
+				if "pdisp" in key:
+					pDisp = keys_list[i]
+				elif "ppileup" in key:
+					pPileup = keys_list[i]
+				elif "pfake" in key:
+					pFake = keys_list[i]
+				elif "pprimary" in key:
+					pPrimary = keys_list[i]
+				elif "pfromBC" in key: #needs to come before pfromB or will never get triggered
+					pFromBC = keys_list[i]
+				elif "pfromB" in key:
+					pFromB = keys_list[i]
+				elif "pfromC" in key:
+					pFromC = keys_list[i]
+				elif "pfromTau" in key:
+					pFromTau = keys_list[i]
+				elif "potherSecondary" in key:
+					pOtherSecondary = keys_list[i]
+
+			if sample.df_name == 'jets':
 				# extract classification labels
 				true_class = np.array(ds_tfj['isDisplaced'])
-				pred_disp = np.array(ds_tfj[f'{f_name}_pdispjet'])
+				pred_disp = np.array(ds_tfj[pDisp])
 				pred_prompt = 1.0 - pred_disp
 
 				# initialize predicted classification labels
@@ -60,30 +83,45 @@ class ConfMatPlotBase(PlotBase):
 				# compute the confusion matrix
 				confmat = confusion_matrix.confusion_matrix(targets=true_class, predictions=pred_class)
 
-			elif task_type == 'track_origin':
+			elif sample.df_name == 'tracks':
 				valid = np.array(ds_tfj['valid'])
 
 				# extract valid origin labels
 				true_origin = np.array(ds_tfj['truthOriginLabel'])[valid]
-				pred_pileup = np.array(ds_tfj[f'{f_name}_ppileup'])[valid]
-				pred_fake = np.array(ds_tfj[f'{f_name}_pfake'])[valid]
-				pred_prompt = np.array(ds_tfj[f'{f_name}_pprompt'])[valid]
-				pred_disp = np.array(ds_tfj[f'{f_name}_pdisplaced'])[valid]
+				pred_pileup = np.array(ds_tfj[pPileup])[valid]
+				pred_fake = np.array(ds_tfj[pFake])[valid]
+				pred_primary = np.array(ds_tfj[pPrimary])[valid]
+				pred_fromB = np.array(ds_tfj[pFromB])[valid]
+				pred_fromBC = np.array(ds_tfj[pFromBC])[valid]
+				pred_fromC = np.array(ds_tfj[pFromC])[valid]
+				pred_fromTau = np.array(ds_tfj[pFromTau])[valid]
+				pred_otherSecondary = np.array(ds_tfj[pOtherSecondary])[valid]
+				pred_displaced = np.array(ds_tfj[pDisp])[valid]
 
 				# initialize predicted origin labels
 				pred_origin = np.empty(len(true_origin))
 
 				# update the pred_origin with most likely predicted track origins
-				for i, (pu, fk, pr, dp) in enumerate(zip(pred_pileup, pred_fake, pred_prompt, pred_disp)):
-					origin = max(pu, fk, pr, dp)
+				for i, (pu, fk, pr, B, BC, C, Tau, os, dp) in enumerate(zip(pred_pileup, pred_fake, pred_primary, pred_fromB, pred_fromBC, pred_fromC, pred_fromTau, pred_otherSecondary, pred_displaced)):
+					origin = max(pu, fk, pr, B, BC, C, Tau, os, dp)
 					if origin == pu:
 						pred_origin[i] = 0
 					elif origin == fk:
 						pred_origin[i] = 1
 					elif origin == pr:
 						pred_origin[i] = 2
-					elif origin == dp:
+					elif origin == B:
 						pred_origin[i] = 3
+					elif origin == BC:
+						pred_origin[i] = 4
+					elif origin == C:
+						pred_origin[i] = 5
+					elif origin == Tau:
+						pred_origin[i] = 6
+					elif origin == os:
+						pred_origin[i] = 7
+					elif origin == dp:
+						pred_origin[i] = 8
 
 				# compute the confusion matrix
 				confmat = confusion_matrix.confusion_matrix(targets=true_origin, predictions=pred_origin)

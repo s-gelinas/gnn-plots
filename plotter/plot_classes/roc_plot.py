@@ -35,7 +35,6 @@ class RocPlotBase(PlotBase):
 
         for _, sample in self.config.samples.items():
             sample_config = ConfigDict(sample)
-            print(sample_config.path)
             with h5py.File(sample_config.path, "r") as hdf_file:
                 ds = hdf_file[sample_config.df_name]
 
@@ -56,6 +55,11 @@ class RocPlotBase(PlotBase):
                         pDisp: np.array(ds[pDisp]).transpose(),
                     }
                 )
+                
+                #Using BCEWithLogitsLoss, need to set 0:1 and 1:0 for class labels or flip here
+                if sample_config.flip_jet_labels:
+                    df[pDisp] = 1.0 - df[pDisp]
+                
                 df = df.dropna()
 
                 # defining boolean arrays to select the different flavour classes
@@ -125,7 +129,7 @@ class RocPlotBase(PlotBase):
                             facecolors = list(roc_plot.label_colours.values())[-1],
                             edgecolors = 'black',
                             alpha=0.7,
-                            label = f"$p_{{\mathrm{{EJ}}}} > {cut:.2f}$:\n$\mathrm{{efficiency}}={eff:.3f}$\n$\mathrm{{rejection}}=2600$",
+                            label = f"$p_{{\mathrm{{EJ}}}} > {cut:.2f}$:\n$\mathrm{{efficiency}}={eff:.3f}$\n$\mathrm{{rejection}}={rej_str}$",
                             # label = r"$P_{{\\mathrm_{EJ}}}>$ {0:.2f}, rej. = {1:.2e}".format(cut_values[i], cut_rejs[i]),
                             zorder = 99
                         )
@@ -147,3 +151,15 @@ class RocPlotBase(PlotBase):
 
 
         roc_plot.savefig(self.config.file_name, transparent=False)
+
+        '''
+         #TESTING (BCEWithLogitsLoss)
+        plt.hist(df[df[target_label] == 0][pDisp], bins=50, alpha=0.5, label='Prompt (label=0)')
+        plt.hist(df[df[target_label] == 1][pDisp], bins=50, alpha=0.5, label='Displaced (label=1)')
+        plt.xlabel("Predicted Score")
+        plt.ylabel("Count")
+        plt.legend()
+        plt.title("Prediction score distribution per class")
+        plt.savefig('output/test.png')
+        plt.close()
+        '''

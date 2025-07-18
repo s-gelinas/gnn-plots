@@ -34,7 +34,6 @@ class SampleInfoPlotBase(PlotBase):
 		
 		for _, sample in self.config.samples.items():
 			sample_config = ConfigDict(sample)
-			print(sample_config.path)
 			with h5py.File(sample_config.path, "r") as hdf_file:
 				if self.config.info_df_name == "jets":
 					ds_jet = hdf_file[self.config.info_df_name]
@@ -107,7 +106,7 @@ class SampleInfoPlotBase(PlotBase):
 					# set the plot style
 					if i == 0:
 						info_plot = HistogramPlot(
-							bins=np.linspace(min_val, 10, 11),# ,max_val,self.config.num_bins), 
+							bins=np.linspace(min_val, max_val, 50),# ,max_val,self.config.num_bins), 
 							**filtered_params
 						)
 					

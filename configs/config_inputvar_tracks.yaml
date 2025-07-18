@@ -1,0 +1,58 @@
+output_dir: output
+
+samples: &samples #plotting code assumes only one sample
+  GN2ej:
+    path: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-fold0_20250521-T174316/ckpts/epoch=009-val_loss=0.02690__test_pp_output_val.h5'
+    label: 'GN3ej'
+    reference: True
+    df_name: tracks 
+    jet_type: prompt # 'displaced' or 'prompt' (determines jet type of plotted tracks)
+
+style: &style
+  ylabel: ""
+  xlabel: ""
+  figsize: !!python/tuple [8, 6]  # figure sizes in this range work best
+  use_atlas_tag: True
+  atlas_second_tag: "$\\sqrt{{s}}=13.6$ TeV"
+  y_scale: 1.0
+  fontsize: 15
+  label_fontsize: 15
+  dpi: 300
+
+plots:
+  input_var_plot:
+    class: plotter.plot_classes.input_var_plot_dev.InputVarPlotBase
+    samples: *samples
+    output_dir: output/GN3ej-fold0/input_var_plots_tracks 
+    variables:  # Remove to plot all variables. Format is {var}: {xlabel}.
+      tracks: #track level variables only
+        - d0: "$d_0$"
+        - z0SinTheta: "$z_0 \\sin(\\theta)$"
+        - dphi: "$\\Delta \\phi$"
+        - deta: "$\\Delta \\eta$"
+        - qOverP: "$q/p$"
+        - chiSquared: "$\\chi^2$"
+        - radiusOfFirstHit: "Radius of first hit"
+        - theta: "$\\theta$"
+        - numberDoF: "Number of degrees of freedom"
+        - pt: "$p_T$ [TeV]"
+        - z0RelativeToBeamspot: "$z_0$ relative to beamspot"
+        - z0RelativeToBeamspotUncertainty: "Uncertainty in $z_0$ relative to beamspot"
+        - IP3D_signed_d0_significance: "$\\frac{d_0}{\\sigma(d_0)}$"
+        - IP3D_signed_z0_significance: "$\\frac{z_0}{\\sigma(z_0)}$"
+        - phiUncertainty: "$\\sigma(\\phi)$"
+        - thetaUncertainty: "$\\sigma(\\theta)$"
+        - qOverPUncertainty: "$\\sigma(q/p)$"
+        - z0SinThetaUncertainty: "$\\sigma(z_0 \\sin(\\theta))$"
+        - numberOfPixelHits: "Number of pixel hits"
+        - numberOfSCTHits: "Number of SCT hits"
+        - numberOfSCTHoles: "Number of SCT holes"
+        - numberOfInnermostPixelLayerHits: "Number of innermost pixel layer hits"
+        - numberOfPixelSharedHits: "Number of shared pixel hits"
+        - numberOfSCTSharedHits: "Number of shared SCT hits"
+    style:
+      <<: *style
+      n_ratio_panels: 1
+      ylabel: "Normalized number of jets"
+      xlabel: "" # Different for each variable
+      y_scale: 1.0

@@ -1,4 +1,4 @@
-# from puma import VarVsEff, VarVsEffPlot
+from puma import VarVsEff, VarVsEffPlot
 from plotter.config_dict import ConfigDict
 import h5py
 import numpy as np
