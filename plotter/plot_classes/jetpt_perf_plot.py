@@ -102,19 +102,21 @@ class JetPtPerfPlotBase(PlotBase):
 
 				# ADD THE CURVES TO THE PLOTS
 				# ---------------------------
-				plot_sig_eff.add(gnn_ej, reference=True)
+				#plot_sig_eff.add(gnn_ej, reference=True)
+				plot_sig_eff.add(gnn_ej, reference=False)
 				plot_sig_eff.leg_loc = self.config.sig_eff_leg_loc
-				plot_sig_eff.atlas_second_tag += f", Score > {wp}"
+				#plot_sig_eff.atlas_second_tag += f", Score > {wp}"
 
-				plot_bkg_rej.add(gnn_ej, reference=True)
+				#plot_bkg_rej.add(gnn_ej, reference=True)
+				plot_bkg_rej.add(gnn_ej, reference=False)
 				plot_bkg_rej.leg_loc = self.config.bkg_rej_leg_loc
-				plot_bkg_rej.atlas_second_tag += f", Score > {wp}"
+				#plot_bkg_rej.atlas_second_tag += f", Score > {wp}"
 
 
 		# DRAW AND SAVE THE PLOTS
 		# -----------------------
 		plot_sig_eff.draw()
-		plot_sig_eff.savefig(self.config.sig_eff_filename, transparent=False)
+		plot_sig_eff.savefig(self.config.sig_eff_filename, transparent=False, dpi = 600)
 
 		plot_bkg_rej.draw()
-		plot_bkg_rej.savefig(self.config.bkg_rej_filename, transparent=False)
+		plot_bkg_rej.savefig(self.config.bkg_rej_filename, transparent=False, dpi = 600)

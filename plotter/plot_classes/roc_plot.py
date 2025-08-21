@@ -129,7 +129,8 @@ class RocPlotBase(PlotBase):
                             facecolors = list(roc_plot.label_colours.values())[-1],
                             edgecolors = 'black',
                             alpha=0.7,
-                            label = f"$p_{{\mathrm{{EJ}}}} > {cut:.2f}$:\n$\mathrm{{efficiency}}={eff:.3f}$\n$\mathrm{{rejection}}={rej_str}$",
+                            #label = f"$p_{{\mathrm{{EJ}}}} > {cut:.2f}$:\n$\mathrm{{efficiency}}={eff:.3f}$\n$\mathrm{{rejection}}={rej_str}$",
+                            label = f"$\mathrm{{efficiency}}={eff:.3f}$\n$\mathrm{{rejection}}={rej_str}$",
                             # label = r"$P_{{\\mathrm_{EJ}}}>$ {0:.2f}, rej. = {1:.2e}".format(cut_values[i], cut_rejs[i]),
                             zorder = 99
                         )
@@ -150,7 +151,7 @@ class RocPlotBase(PlotBase):
             roc_plot.axis_top.legend(handles[::-1], labels[::-1], fontsize=self.config.leg_fontsize, frameon=False)
 
 
-        roc_plot.savefig(self.config.file_name, transparent=False)
+        roc_plot.savefig(self.config.file_name, transparent=False, dpi=600)
 
         '''
          #TESTING (BCEWithLogitsLoss)

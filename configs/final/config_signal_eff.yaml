@@ -1,18 +1,22 @@
 output_dir: /project/6050429/sgelinas/salt/gnn-plots/output/GN3ej-combined-extLabels-fold0
 
 samples: &samples
-  Old samples:
-    input_dir: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-oldSamples-extLabels-fold0-classdict_20250610-T130836/ckpts/lifetime'
-    label: 'Old samples - weights'
-    df_name: jets
   New samples:
     input_dir: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-combined-extLabels-fold0-classdict_20250606-T150049/ckpts/lifetime'
-    label: 'New samples - weights' #'New samples'
+    label: 'New samples' #'New samples - weights'
     df_name: jets
-  No weights:
-    input_dir: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-combined-extLabels-fold0_20250602-T183213/ckpts/lifetime'
-    label: 'New samples - no weights'
+  #New no weights:
+  #  input_dir: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-combined-extLabels-fold0_20250602-T183213/ckpts/lifetime'
+  #  label: 'New samples - no weights'
+  #  df_name: jets
+  Old samples:
+    input_dir: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-oldSamples-extLabels-fold0-classdict_20250610-T130836/ckpts/lifetime'
+    label: 'Old samples' #'Old samples - weights'
     df_name: jets
+  #Old no weights:
+  #  input_dir: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-oldSamples-extLabels-fold0_20250610-T224142/ckpts/lifetime'
+  #  label: 'Old samples - no weights'
+  #  df_name: jets
 
 style: &style
   figsize: !!python/tuple [6, 4.5]  # figure sizes in this range work best
@@ -21,17 +25,16 @@ style: &style
   atlas_first_tag: "Simulation Internal"
   atlas_second_tag: "$\\sqrt{{s}}=13.6$ TeV, $51.8$ fb$^{-1}$"
   atlas_fontsize: 14
-  y_scale: 1.3
+  y_scale: 1.4
   grid: False
 
 plots:
   eff_vs_lifetime:
     class: plotter.plot_classes.signal_eff_plot.SignalEffPlotBase
     samples: *samples
-    range: !!python/tuple [0.95, 1, 100]
     target_label: isDisplaced
     cut_value: 0.98
-    file_name: output/final/lifetime_eff.png # output
+    file_name: output/final-student-presentation/lifetime_eff.png # output
     style:
       <<: *style
       n_ratio_panels: 0

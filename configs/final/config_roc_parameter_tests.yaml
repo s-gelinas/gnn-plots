@@ -1,0 +1,70 @@
+output_dir: /project/6050429/sgelinas/salt/gnn-plots/output/GN3ej-fold0
+
+samples: &samples
+  six:
+    path: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-fold0-jetclass2_20250523-T200321/ckpts/epoch=009-val_loss=0.02660__test_pp_output_val.h5'
+    label: 'BCEWithLogitsLoss'
+    reference: False
+    df_name: jets
+    flip_jet_labels: True
+  four:
+    path: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-fold0-SiLU_20250523-T110413/ckpts/epoch=010-val_loss=0.02667__test_pp_output_val.h5'
+    label: 'SiLU'
+    reference: False
+    df_name: jets
+    flip_jet_labels: False
+  three:
+    path: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-fold0-lrs2_20250523-T111031/ckpts/epoch=008-val_loss=0.02701__test_pp_output_val.h5'
+    label: 'lrs: initial/max/end'
+    reference: False
+    df_name: jets
+    flip_jet_labels: False
+  two:
+    path: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-fold0-lrs1_20250524-T181544/ckpts/epoch=009-val_loss=0.02635__test_pp_output_val.h5'
+    label: 'lrs: pct_start'
+    reference: False
+    df_name: jets
+    flip_jet_labels: False
+  five:
+    path: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-fold0-track-embed1_20250523-T110413/ckpts/epoch=009-val_loss=0.02732__test_pp_output_val.h5'
+    label: 'Increased track embedding'
+    reference: False
+    df_name: jets
+    flip_jet_labels: False
+  one:
+    path: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-fold0_20250521-T171616/ckpts/epoch=010-val_loss=0.02672__test_pp_output_val.h5'
+    label: 'Nominal'
+    reference: True
+    df_name: jets
+    flip_jet_labels: False
+
+style: &style
+  figsize: !!python/tuple [9, 5.5] #[8, 4.5]  # figure sizes in this range work best
+  label_fontsize: 13
+  fontsize: 13
+  atlas_first_tag: "Simulation Internal"
+  atlas_second_tag: "$\\sqrt{{s}}=13.6$ TeV, $51.8$ fb$^{-1}$, $p_{EJ} > 0.98$"
+  atlas_fontsize: 14
+  ymin: 1
+  y_scale: 0.9
+  grid: False
+
+plots:
+  roc:
+    class: plotter.plot_classes.roc_plot.RocPlotBase
+    samples: *samples
+    file_name: output/final/roc_parameter_tests.png
+    target_label: isDisplaced
+    tagger_output: GN2ej_pdispjet
+    range: !!python/tuple [0.95, 1, 100]
+    show_cuts: True  # choose whether to display your desired cuts
+    leg_inside: False
+    leg_fontsize: 13
+    reference_label: "nominal"
+    cut_values: [0.98]  # or None
+    style:
+      <<: *style
+      n_ratio_panels: 0
+      ylabel: "Background rejection "
+      xlabel: "EJ tagging efficiency "
+      y_scale: 1.3

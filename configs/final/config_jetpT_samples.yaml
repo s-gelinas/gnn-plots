@@ -1,0 +1,56 @@
+output_dir: output
+
+samples: &samples
+  #six:
+  #  path: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-combined-extLabels-classdict_20250704-T033324/ckpts/epoch=009-val_loss=0.02554__test_pp_output_val.h5'
+  #  label: 'Combined data (new train/eval)'
+  #  reference: False
+  #two:
+  #  path: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-combined-extLabels-fold0-classdict_20250606-T150049/ckpts/epoch=007-val_loss=0.02522__test_pp_output_val.h5'
+  #  label: 'Trained on new, evaluated on new'
+  #  reference: False
+  three:
+    path: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-combined-extLabels-fold0-classdict_20250606-T150049/ckpts/epoch=007-val_loss=0.02522__test_pp_output_val_old.h5'
+    label: 'Trained on new, evaluated on old'
+    reference: False
+  #four:
+  #  path: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-oldSamples-extLabels-fold0-classdict_20250610-T130836/ckpts/epoch=011-val_loss=0.00779__test_pp_output_val_new.h5'
+  #  label: 'Trained on old, evaluated on new'
+  #  reference: False
+  five:
+    path: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-oldSamples-extLabels-fold0-classdict_20250610-T130836/ckpts/epoch=011-val_loss=0.00779__test_pp_output_val.h5'
+    label: 'Trained on old, evaluated on old'
+    reference: False
+  one:
+    path: '/project/def-mdanning/sgelinas/salt/salt/logs/GN3ej-fold0_20250521-T171616/ckpts/epoch=010-val_loss=0.02672__test_pp_output_val.h5'
+    label: 'Nominal'
+    reference: False
+
+style: &style
+  ylabel: ""
+  xlabel: ""
+  figsize: !!python/tuple [8, 6]
+  use_atlas_tag: True
+  atlas_second_tag: "$\\sqrt{{s}}=13.6$ TeV, $p_{EJ} > 0.98$"
+  y_scale: 1.0
+  fontsize: 15
+  label_fontsize: 15
+  dpi: 300
+
+plots:
+  jetpt_perf:
+    class: plotter.plot_classes.jetpt_perf_plot.JetPtPerfPlotBase
+    samples: *samples
+    sig_eff_filename: output/final/EJ_eff_vs_jetpT_del.png
+    bkg_rej_filename: output/final/QCD_rej_vs_jetpT_oldEval.png
+    working_point: 0.98
+    binedges: [0.2,0.3,0.4,0.5,0.6,0.8,1.2,2.25]  # in TeV
+    #binedges: [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3]
+    sig_eff_leg_loc: lower right
+    bkg_rej_leg_loc: upper left
+    style:
+      <<: *style
+      grid: True
+      figsize: !!python/tuple [7,5]
+      y_scale: 1.0
+      atlas_tag_outside: True
