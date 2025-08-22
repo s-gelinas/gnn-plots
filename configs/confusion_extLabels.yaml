@@ -22,7 +22,7 @@ plots:
     style:
       <<: *style
       xlabel: GN3ej prediction
-      ylabel: Truth labe ls
+      ylabel: Truth labels
       figsize: !!python/tuple [8,8]
       show_entries: True
       text_color_threshold: 0.6
